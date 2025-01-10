@@ -1,6 +1,16 @@
-import React from "react";
+async function fetchData() {
+  const res = await fetch("http://localhost:3000/api/book/read", {
+    cache: "no-store", // Menghindari caching (opsional tergantung kebutuhan)
+  });
+  if (!res.ok) {
+    throw new Error("Failed to fetch data");
+  }
+  return res.json();
+}
 
-export default function Home() {
+export default async function Home() {
+  const books = await fetchData();
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4">
       <header className="bg-blue-800 text-white p-4 rounded-md shadow-md">
@@ -20,7 +30,18 @@ export default function Home() {
                 <th className="py-2 px-4">Aksi</th>
               </tr>
             </thead>
-            <tbody>{/* Data buku akan dimuat di sini */}</tbody>
+            <tbody>
+              {books.map((book) => (
+                <tr key={book.id}>
+                  <td>{book.id}</td>
+                  <td>{book.title}</td>
+                  <td>{book.author}</td>
+                  <td>{book.category}</td>
+                  <td>{book.stock}</td>
+                  <td>edit</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </section>
         <section id="transaction-list" className="mb-6">
