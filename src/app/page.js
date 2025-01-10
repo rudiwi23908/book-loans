@@ -1,5 +1,9 @@
-async function fetchData() {
-  const res = await fetch("http://localhost:3000/api/book/read", {
+"use client";
+
+import React, { useState, useEffect } from "react";
+
+async function fetchBooks() {
+  const res = await fetch("/api/book/read", {
     cache: "no-store", // Menghindari caching (opsional tergantung kebutuhan)
   });
   if (!res.ok) {
@@ -8,8 +12,52 @@ async function fetchData() {
   return res.json();
 }
 
-export default async function Home() {
-  const books = await fetchData();
+export default function Home() {
+  const [books, setBooks] = useState([]);
+  const [formData, setFormData] = useState({
+    title: "",
+    author: "",
+    category: "",
+    stock: "",
+  });
+
+  useEffect(() => {
+    fetchBooks().then((data) => setBooks(data));
+  }, []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/book/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to create book");
+      }
+      const newBook = await res.json();
+      setBooks([...books, newBook]);
+      setFormData({
+        title: "",
+        author: "",
+        category: "",
+        stock: "",
+      });
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4">
@@ -33,12 +81,12 @@ export default async function Home() {
             <tbody>
               {books.map((book) => (
                 <tr key={book.id}>
-                  <td>{book.id}</td>
-                  <td>{book.title}</td>
-                  <td>{book.author}</td>
-                  <td>{book.category}</td>
-                  <td>{book.stock}</td>
-                  <td>edit</td>
+                  <td className="py-2 px-4">{book.id}</td>
+                  <td className="py-2 px-4">{book.title}</td>
+                  <td className="py-2 px-4">{book.author}</td>
+                  <td className="py-2 px-4">{book.category}</td>
+                  <td className="py-2 px-4">{book.stock}</td>
+                  <td className="py-2 px-4">edit</td>
                 </tr>
               ))}
             </tbody>
@@ -66,6 +114,7 @@ export default async function Home() {
           <form
             id="add-book-form"
             className="bg-gray-800 p-4 rounded-md shadow-md"
+            onSubmit={handleSubmit}
           >
             <div className="mb-4">
               <label htmlFor="title" className="block text-gray-300">
@@ -77,6 +126,8 @@ export default async function Home() {
                 name="title"
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+                value={formData.title}
+                onChange={handleChange}
               />
             </div>
             <div className="mb-4">
@@ -89,6 +140,8 @@ export default async function Home() {
                 name="author"
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+                value={formData.author}
+                onChange={handleChange}
               />
             </div>
             <div className="mb-4">
@@ -100,6 +153,8 @@ export default async function Home() {
                 id="category"
                 name="category"
                 required
+                value={formData.category}
+                onChange={handleChange}
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
               />
             </div>
@@ -113,6 +168,8 @@ export default async function Home() {
                 name="stock"
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+                value={formData.stock}
+                onChange={handleChange}
               />
             </div>
             <button
