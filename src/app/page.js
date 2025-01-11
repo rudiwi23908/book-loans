@@ -47,7 +47,7 @@ export default function Home() {
         throw new Error("Failed to create book");
       }
       const newBook = await res.json();
-      setBooks([...books, newBook]);
+      setBooks((prevBooks) => [...prevBooks, newBook]);
       setFormData({
         title: "",
         author: "",
@@ -55,6 +55,7 @@ export default function Home() {
         stock: "",
       });
     } catch (error) {
+      console.log(formData);
       console.error("Error:", error);
     }
   };
@@ -67,26 +68,34 @@ export default function Home() {
       <main className="mt-6">
         <section id="book-list" className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Daftar Buku</h2>
-          <table className="min-w-full bg-gray-800 shadow-md rounded-md overflow-hidden">
+          <table className="min-w-full text-left bg-gray-800 shadow-md rounded-md overflow-hidden">
             <thead className="bg-gray-700">
               <tr>
-                <th className="py-2 px-4">ID</th>
-                <th className="py-2 px-4">Judul</th>
-                <th className="py-2 px-4">Penulis</th>
-                <th className="py-2 px-4">Kategori</th>
-                <th className="py-2 px-4">Stok</th>
-                <th className="py-2 px-4">Aksi</th>
+                <th className="p-2">Title</th>
+                <th className="p-2">Author</th>
+                <th className="p-2">Category</th>
+                <th className="p-2">Stock</th>
+                <th className="p-2">Actions</th>
               </tr>
             </thead>
             <tbody>
               {books.map((book) => (
                 <tr key={book.id}>
-                  <td className="py-2 px-4">{book.id}</td>
-                  <td className="py-2 px-4">{book.title}</td>
-                  <td className="py-2 px-4">{book.author}</td>
-                  <td className="py-2 px-4">{book.category}</td>
-                  <td className="py-2 px-4">{book.stock}</td>
-                  <td className="py-2 px-4">edit</td>
+                  <td className=" px-3 py-2">{book.title}</td>
+                  <td className=" px-3 py-2">{book.author}</td>
+                  <td className=" px-3 py-2">{book.category}</td>
+                  <td className=" px-3 py-2">{book.stock}</td>
+                  <td className=" px-3 py-2">
+                    <button
+                      onClick={() => handleDelete(book.id)}
+                      className="bg-red-600  px-3 py-2 rounded-md mr-2"
+                    >
+                      Delete
+                    </button>
+                    <button className="bg-yellow-600 p-2 rounded-md">
+                      Edit
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
