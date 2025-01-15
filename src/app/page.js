@@ -1,25 +1,45 @@
 "use client";
 
+import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
-async function fetchBooks() {
-  const res = await fetch("/api/book/read", {
-    cache: "no-store", // Menghindari caching (opsional tergantung kebutuhan)
-  });
-  if (!res.ok) {
-    throw new Error("Failed to fetch data");
-  }
-  return res.json();
-}
+// async function fetchBooks() {
+//   const res = await fetch("/api/book/read", {
+//     cache: "no-store", // Menghindari caching (opsional tergantung kebutuhan)
+//   });
+//   if (!res.ok) {
+//     throw new Error("Failed to fetch data");
+//   }
+//   return res.json();
+// }
 
 export default function Home() {
   const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const [formData, setFormData] = useState({
     title: "",
     author: "",
     category: "",
     stock: "",
   });
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const res = await fetch("/api/book");
+        if (!res.ok) throw new Error("Failed to fetch books");
+        const data = await res.json();
+        setBooks(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
+  }, []);
 
   useEffect(() => {
     fetchBooks().then((data) => setBooks(data));
@@ -60,6 +80,12 @@ export default function Home() {
     }
   };
 
+  const handleBookClick = (id) => {
+    router.push(`/book/${id}`);
+  };
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4">
       <header className="bg-blue-800 text-white p-4 rounded-md shadow-md">
@@ -80,14 +106,21 @@ export default function Home() {
             </thead>
             <tbody>
               {books.map((book) => (
-                <tr key={book.id}>
+                <tr
+                  key={book.id}
+                  onClick={() => (window.location.href = `/book/${book.id}`)} // Navigasi manual
+                  className="cursor-pointer hover:bg-gray-900"
+                >
                   <td className=" px-3 py-2">{book.title}</td>
                   <td className=" px-3 py-2">{book.author}</td>
                   <td className=" px-3 py-2">{book.category}</td>
                   <td className=" px-3 py-2">{book.stock}</td>
                   <td className=" px-3 py-2">
                     <button
-                      onClick={() => handleDelete(book.id)}
+                      onClick={() => {
+                        e.stopPropagation();
+                        handleDelete(book.id);
+                      }}
                       className="bg-red-600  px-3 py-2 rounded-md mr-2"
                     >
                       Delete
