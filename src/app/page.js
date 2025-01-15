@@ -16,6 +16,7 @@ import React, { useState, useEffect } from "react";
 export default function Home() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
     title: "",
