@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import React, { useState, useEffect } from "react";
 
 // async function fetchBooks() {
@@ -28,7 +27,7 @@ export default function Home() {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const res = await fetch("/api/book");
+        const res = await fetch("/api/book/read");
         if (!res.ok) throw new Error("Failed to fetch books");
         const data = await res.json();
         setBooks(data);
@@ -42,9 +41,9 @@ export default function Home() {
     fetchBooks();
   }, []);
 
-  useEffect(() => {
-    fetchBooks().then((data) => setBooks(data));
-  }, []);
+  // useEffect(() => {
+  //   fetchBooks().then((data) => setBooks(data));
+  // }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
