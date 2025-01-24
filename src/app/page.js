@@ -1,13 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
 export default function Home() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [bookEdit, setBookEdit] = useState([]);
-
+  const [editingBookId, setEditingBookId] = useState(null); // Menyimpan ID buku yang sedang diedit
+  const [updatedData, setUpdatedData] = useState({}); // Menyimpan data yang diubah
   const [formData, setFormData] = useState({
     title: "",
     author: "",
@@ -15,7 +16,20 @@ export default function Home() {
     stock: "",
   });
 
-  const handleEdit = () => {};
+  const router = useRouter();
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatedData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleEditClick = (book) => {
+    setEditingBookId(book.id);
+    setUpdatedData(book); // Mengisi form dengan data buku yang akan diedit
+  };
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -69,10 +83,6 @@ export default function Home() {
     }
   };
 
-  const handleBookClick = (id) => {
-    router.push(`/book/${id}`);
-  };
-
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
   return (
@@ -97,26 +107,89 @@ export default function Home() {
               {books.map((book) => (
                 <tr
                   key={book.id}
-                  onClick={() => (window.location.href = `/book/${book.id}`)} // Navigasi manual
+                  onClick={() => router.push(`/book/${book.id}`)}
                   className="cursor-pointer hover:bg-gray-900"
                 >
-                  <td className=" px-3 py-2">{book.title}</td>
-                  <td className=" px-3 py-2">{book.author}</td>
-                  <td className=" px-3 py-2">{book.category}</td>
-                  <td className=" px-3 py-2">{book.stock}</td>
                   <td className=" px-3 py-2">
-                    <button
-                      onClick={() => {
-                        e.stopPropagation();
-                        handleDelete(book.id);
-                      }}
-                      className="bg-red-600  px-3 py-2 rounded-md mr-2"
-                    >
-                      Delete
-                    </button>
-                    <button className="bg-yellow-600 p-2 rounded-md">
-                      Edit
-                    </button>
+                    {editingBookId === book.id ? (
+                      <input
+                        type="text"
+                        name="title"
+                        value={updatedData.title || ""}
+                        onChange={handleInputChange}
+                        className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+                      />
+                    ) : (
+                      book.title
+                    )}
+                  </td>
+                  <td className=" px-3 py-2">
+                    {editingBookId === book.id ? (
+                      <input
+                        type="text"
+                        name="author"
+                        value={updatedData.author || ""}
+                        onChange={handleInputChange}
+                        className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+                      />
+                    ) : (
+                      book.author
+                    )}
+                  </td>
+                  <td className=" px-3 py-2">
+                    {" "}
+                    {editingBookId === book.id ? (
+                      <input
+                        type="text"
+                        name="category"
+                        value={updatedData.category || ""}
+                        onChange={handleInputChange}
+                        className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+                      />
+                    ) : (
+                      book.category
+                    )}
+                  </td>
+                  <td className=" px-3 py-2">
+                    {" "}
+                    {editingBookId === book.id ? (
+                      <input
+                        type="number"
+                        name="stock"
+                        value={updatedData.stock || ""}
+                        onChange={handleInputChange}
+                        className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+                      />
+                    ) : (
+                      book.stock
+                    )}
+                  </td>
+                  <td className=" px-3 py-2">
+                    {editingBookId === book.id ? (
+                      <>
+                        <button
+                          onClick={() => handleSave(book.id)}
+                          className="bg-green-600 px-3 py-2 rounded-md mr-2"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingBookId(null)}
+                          className="bg-red-600 px-3 py-2 rounded-md"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          handleEditClick(book);
+                        }}
+                        className="bg-yellow-600 px-3 py-2 rounded-md"
+                      >
+                        Edit
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
