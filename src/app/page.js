@@ -18,6 +18,44 @@ export default function Home() {
 
   // const router = useRouter();
 
+  const handleSave = async (id) => {
+    try {
+      const res = await fetch(`/api/book/update`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id, ...updatedData }),
+      });
+      if (!res.ok) throw new Error("Failed to update book");
+      const updatedBook = await res.json();
+      setBooks((prevBooks) =>
+        prevBooks.map((book) => (book.id === id ? updatedBook : book))
+      );
+      setEditingBookId(null);
+    } catch (error) {
+      console.error("Error updating book:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm("Apakah Anda yakin ingin menghapus buku ini?")) {
+      try {
+        const res = await fetch(`/api/book/delete`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id }),
+        });
+        if (!res.ok) throw new Error("Failed to delete book");
+        setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
+      } catch (error) {
+        console.error("Error deleting book:", error);
+      }
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUpdatedData((prev) => ({
@@ -190,7 +228,10 @@ export default function Home() {
                         >
                           Edit
                         </button>
-                        <button className="bg-red-600 px-3 py-2 rounded-md">
+                        <button
+                          onClick={() => handleDelete(book.id)}
+                          className="bg-red-600 px-3 py-2 rounded-md"
+                        >
                           Hapus
                         </button>
                       </>
