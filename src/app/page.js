@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/router";
 
 export default function Home() {
   const [books, setBooks] = useState([]);
@@ -16,7 +16,7 @@ export default function Home() {
     stock: "",
   });
 
-  const router = useRouter();
+  // const router = useRouter();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -107,7 +107,7 @@ export default function Home() {
               {books.map((book) => (
                 <tr
                   key={book.id}
-                  onClick={() => router.push(`/book/${book.id}`)}
+                  // onClick={() => router.push(`/book/${book.id}`)}
                   className="cursor-pointer hover:bg-gray-900"
                 >
                   <td className=" px-3 py-2">
