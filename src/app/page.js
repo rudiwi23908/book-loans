@@ -181,14 +181,19 @@ export default function Home() {
                         </button>
                       </>
                     ) : (
-                      <button
-                        onClick={() => {
-                          handleEditClick(book);
-                        }}
-                        className="bg-yellow-600 px-3 py-2 rounded-md"
-                      >
-                        Edit
-                      </button>
+                      <>
+                        <button
+                          onClick={() => {
+                            handleEditClick(book);
+                          }}
+                          className="bg-yellow-600 px-3 py-2 rounded-md"
+                        >
+                          Edit
+                        </button>
+                        <button className="bg-red-600 px-3 py-2 rounded-md">
+                          Hapus
+                        </button>
+                      </>
                     )}
                   </td>
                 </tr>
