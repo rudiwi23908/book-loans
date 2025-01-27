@@ -1,5 +1,6 @@
 "use client";
 
+import { stringify } from "postcss";
 import React, { useState, useEffect } from "react";
 // import { useRouter } from "next/router";
 
@@ -9,12 +10,93 @@ export default function Home() {
   const [error, setError] = useState(null);
   const [editingBookId, setEditingBookId] = useState(null); // Menyimpan ID buku yang sedang diedit
   const [updatedData, setUpdatedData] = useState({}); // Menyimpan data yang diubah
-  const [formData, setFormData] = useState({
+  const [formDataBook, setFormDataBook] = useState({
     title: "",
     author: "",
     category: "",
     stock: "",
   });
+  const [formDataTransaction, setFormDataTransaction] = useState({
+    book_id: "",
+    title: "",
+    borrower_name: "",
+    borrow_date: "",
+    return_date: "",
+    status: "borrowed", // default status
+  });
+
+  const [searchTerm, setSearchTerm] = useState(""); // Untuk input pencarian
+  const [filteredBooks, setFilteredBooks] = useState([]); // Menyimpan hasil pencarian buku
+
+  // Fungsi untuk mencari buku berdasarkan judul
+  const searchBooks = async (title) => {
+    if (!title) {
+      setFilteredBooks([]); // Kosongkan hasil jika input kosong
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/book/search?title=${title}`);
+      if (!res.ok) throw new Error("Failed to fetch books");
+
+      const data = await res.json();
+      setFilteredBooks(data);
+    } catch (err) {
+      console.error("Error fetching books:", err);
+    }
+  };
+
+  const handleSubmitTransaction = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("/api/transaction/create", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify(formDataTransaction),
+      });
+
+      if (!res.ok) throw new Error("failed to create transaction");
+
+      const data = await res.json();
+      alert("transaksi berhasil dibuat!");
+      console.log("created transaction:", data);
+
+      setFormDataTransaction({
+        book_id: "",
+        title: "",
+        borrower_name: "",
+        borrow_date: "",
+        return_date: "",
+        status: "borrowed",
+      });
+    } catch (error) {
+      console.error("error creating transaction", error);
+      alert("gagal membuat transaksi");
+    }
+  };
+
+  // Fungsi untuk menghandle perubahan input pencarian
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    // Panggil fungsi pencarian saat input berubah
+    searchBooks(value);
+  };
+
+  // Fungsi untuk memilih buku dari hasil pencarian
+  const handleSelectBook = (book) => {
+    setFormDataTransaction((prev) => ({
+      ...prev,
+      book_id: book.id, // Set ID buku yang dipilih
+      title: book.title, // Mengisi form dengan judul buku yang dipilih
+    }));
+    setSearchTerm(""); // Menghapus input pencarian setelah memilih buku
+    setFilteredBooks([]); // Mengosongkan hasil pencarian
+  };
 
   // const router = useRouter();
 
@@ -88,13 +170,13 @@ export default function Home() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormDataBook({
+      ...formDataBook,
       [name]: value,
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmitBook = async (e) => {
     e.preventDefault();
     try {
       const res = await fetch("/api/book/create", {
@@ -102,21 +184,21 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formDataBook),
       });
       if (!res.ok) {
         throw new Error("Failed to create book");
       }
       const newBook = await res.json();
       setBooks((prevBooks) => [...prevBooks, newBook]);
-      setFormData({
+      setFormDataBook({
         title: "",
         author: "",
         category: "",
         stock: "",
       });
     } catch (error) {
-      console.log(formData);
+      console.log(formDataBook);
       console.error("Error:", error);
     }
   };
@@ -264,7 +346,7 @@ export default function Home() {
           <form
             id="add-book-form"
             className="bg-gray-800 p-4 rounded-md shadow-md"
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmitTransaction}
           >
             <div className="mb-4">
               <label htmlFor="title" className="block text-gray-300">
@@ -276,8 +358,8 @@ export default function Home() {
                 name="title"
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-                value={formData.title}
-                onChange={handleChange}
+                value={formDataBook.title}
+                onChange={handleSearchChange}
               />
             </div>
             <div className="mb-4">
@@ -290,7 +372,7 @@ export default function Home() {
                 name="author"
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-                value={formData.author}
+                value={formDataBook.author}
                 onChange={handleChange}
               />
             </div>
@@ -303,7 +385,7 @@ export default function Home() {
                 id="category"
                 name="category"
                 required
-                value={formData.category}
+                value={formDataBook.category}
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
               />
@@ -318,7 +400,7 @@ export default function Home() {
                 name="stock"
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-                value={formData.stock}
+                value={formDataBook.stock}
                 onChange={handleChange}
               />
             </div>
@@ -335,18 +417,38 @@ export default function Home() {
           <form
             id="add-transaction-form"
             className="bg-gray-800 p-4 rounded-md shadow-md"
+            onSubmit={handleSubmitTransaction}
           >
             <div className="mb-4">
-              <label htmlFor="book_id" className="block text-gray-300">
-                ID Buku:
+              <label htmlFor="book_title" className="block text-gray-300">
+                Judul Buku
               </label>
               <input
-                type="number"
-                id="book_id"
-                name="book_id"
+                type="text"
+                id="book_title"
+                name="book_title"
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+                onChange={handleSearchChange} // Update pencarian buku
+                value={searchTerm || formDataTransaction.title}
               />
+              {filteredBooks.length > 0 ? (
+                <ul className="bg-gray-700 mt-2 p-2 rounded-md max-h-40 overflow-y-auto">
+                  {filteredBooks.map((book) => (
+                    <li
+                      key={book.id}
+                      className="cursor-pointer p-2 hover:bg-gray-600"
+                      onClick={() => handleSelectBook(book)} // Memilih buku dari hasil pencarian
+                    >
+                      {book.title}
+                    </li>
+                  ))}
+                </ul>
+              ) : searchTerm && !filteredBooks.length ? (
+                <div className="bg-gray-700 mt-2 p-2 rounded-md">
+                  <span>Tidak ada hasil ditemukan</span>
+                </div>
+              ) : null}
             </div>
             <div className="mb-4">
               <label htmlFor="borrower_name" className="block text-gray-300">
