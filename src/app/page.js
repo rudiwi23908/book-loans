@@ -22,11 +22,20 @@ export default function Home() {
     borrower_name: "",
     borrow_date: "",
     return_date: "",
+    actual_return_date: "",
     status: "borrowed", // default status
   });
 
   const [searchTerm, setSearchTerm] = useState(""); // Untuk input pencarian
   const [filteredBooks, setFilteredBooks] = useState([]); // Menyimpan hasil pencarian buku
+
+  const handleInputChangeTransaction = (e) => {
+    const { name, value } = e.target;
+    setFormDataTransaction((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
 
   // Fungsi untuk mencari buku berdasarkan judul
   const searchBooks = async (title) => {
@@ -49,6 +58,8 @@ export default function Home() {
   const handleSubmitTransaction = async (e) => {
     e.preventDefault();
 
+    console.log("Payload being sent:", formDataTransaction);
+
     try {
       const res = await fetch("/api/transaction/create", {
         method: "POST",
@@ -58,11 +69,10 @@ export default function Home() {
         body: JSON.stringify(formDataTransaction),
       });
 
-      if (!res.ok) throw new Error("failed to create transaction");
+      if (!res.ok) throw new Error("Failed to create transaction");
 
       const data = await res.json();
-      alert("transaksi berhasil dibuat!");
-      console.log("created transaction:", data);
+      console.log("Created transaction:", data);
 
       setFormDataTransaction({
         book_id: "",
@@ -70,11 +80,11 @@ export default function Home() {
         borrower_name: "",
         borrow_date: "",
         return_date: "",
+        actual_return_date: "",
         status: "borrowed",
       });
     } catch (error) {
-      console.error("error creating transaction", error);
-      alert("gagal membuat transaksi");
+      console.error("Error creating transaction", error);
     }
   };
 
@@ -168,7 +178,7 @@ export default function Home() {
     fetchBooks();
   }, []);
 
-  const handleChange = (e) => {
+  const handleChangeBook = (e) => {
     const { name, value } = e.target;
     setFormDataBook({
       ...formDataBook,
@@ -333,7 +343,8 @@ export default function Home() {
                 <th className="py-2 px-4">ID Buku</th>
                 <th className="py-2 px-4">Nama Peminjam</th>
                 <th className="py-2 px-4">Tanggal Pinjam</th>
-                <th className="py-2 px-4">Tanggal Kembali</th>
+                <th className="py-2 px-4">Tanggal Pengembalian</th>
+                <th className="py-2 px-4">Tanggal Dikembalikan</th>
                 <th className="py-2 px-4">Status</th>
                 <th className="py-2 px-4">Aksi</th>
               </tr>
@@ -346,7 +357,7 @@ export default function Home() {
           <form
             id="add-book-form"
             className="bg-gray-800 p-4 rounded-md shadow-md"
-            onSubmit={handleSubmitTransaction}
+            onSubmit={handleSubmitBook}
           >
             <div className="mb-4">
               <label htmlFor="title" className="block text-gray-300">
@@ -359,7 +370,7 @@ export default function Home() {
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
                 value={formDataBook.title}
-                onChange={handleSearchChange}
+                onChange={handleChangeBook}
               />
             </div>
             <div className="mb-4">
@@ -373,7 +384,7 @@ export default function Home() {
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
                 value={formDataBook.author}
-                onChange={handleChange}
+                onChange={handleChangeBook}
               />
             </div>
             <div className="mb-4">
@@ -386,7 +397,7 @@ export default function Home() {
                 name="category"
                 required
                 value={formDataBook.category}
-                onChange={handleChange}
+                onChange={handleChangeBook}
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
               />
             </div>
@@ -401,7 +412,7 @@ export default function Home() {
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
                 value={formDataBook.stock}
-                onChange={handleChange}
+                onChange={handleChangeBook}
               />
             </div>
             <button
@@ -456,10 +467,12 @@ export default function Home() {
               </label>
               <input
                 type="text"
+                onChange={handleInputChangeTransaction}
                 id="borrower_name"
                 name="borrower_name"
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+                value={formDataTransaction.borrower_name}
               />
             </div>
             <div className="mb-4">
@@ -469,9 +482,25 @@ export default function Home() {
               <input
                 type="date"
                 id="borrow_date"
+                onChange={handleInputChangeTransaction}
                 name="borrow_date"
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+                value={formDataTransaction.borrow_date}
+              />
+            </div>
+            <div className="mb-4">
+              <label htmlFor="return_date" className="block text-gray-300">
+                Tanggal Pengembalian:
+              </label>
+              <input
+                type="date"
+                id="actual_return_date"
+                onChange={handleInputChangeTransaction}
+                name="actual_return_date"
+                required
+                className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+                value={formDataTransaction.actual_return_date}
               />
             </div>
             <div className="mb-4">
@@ -481,9 +510,11 @@ export default function Home() {
               <input
                 type="date"
                 id="return_date"
+                onChange={handleInputChangeTransaction}
                 name="return_date"
                 required
                 className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+                value={formDataTransaction.return_date}
               />
             </div>
             <button
