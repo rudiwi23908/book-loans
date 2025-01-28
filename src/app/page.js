@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 
 export default function Home() {
   const [books, setBooks] = useState([]);
+  const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [editingBookId, setEditingBookId] = useState(null); // Menyimpan ID buku yang sedang diedit
@@ -133,6 +134,8 @@ export default function Home() {
   const handleDelete = async (id) => {
     if (confirm("Apakah Anda yakin ingin menghapus buku ini?")) {
       try {
+        console.log("Memulai proses penghapusan untuk ID:", id); // Debug ID sebelum menghapus
+
         const res = await fetch(`/api/book/delete`, {
           method: "DELETE",
           headers: {
@@ -140,7 +143,13 @@ export default function Home() {
           },
           body: JSON.stringify({ id }),
         });
-        if (!res.ok) throw new Error("Failed to delete book");
+        console.log("Respons fetch:", res); // Log respons fetch
+
+        if (!res.ok) {
+          const errorData = await res.json(); // Jika error, log error detail
+          console.error("Error detail dari server:", errorData);
+          throw new Error("Failed to delete book");
+        }
         setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
       } catch (error) {
         console.error("Error deleting book:", error);
@@ -176,6 +185,23 @@ export default function Home() {
     };
 
     fetchBooks();
+  }, []);
+
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        const res = await fetch("/api/transaction/read");
+        if (!res.ok) throw new Error("Failed to fetch books");
+        const data = await res.json();
+        setTransactions(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTransactions();
   }, []);
 
   const handleChangeBook = (e) => {
@@ -215,6 +241,7 @@ export default function Home() {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>{error}</p>;
+
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4">
       <header className="bg-blue-800 text-white p-4 rounded-md shadow-md">
@@ -349,7 +376,20 @@ export default function Home() {
                 <th className="py-2 px-4">Aksi</th>
               </tr>
             </thead>
-            <tbody>{/* Data transaksi akan dimuat di sini */}</tbody>
+            <tbody>
+              {transactions.map((transaction, index) => (
+                <tr key={transaction.id}>
+                  <td>{index + 1}</td>
+                  <td>{transaction.book_id}</td>
+                  <td>{transaction.borrower_name}</td>
+                  <td>{transaction.borrow_date}</td>
+                  <td>{transaction.return_date}</td>
+                  <td>{transaction.actual_return_date}</td>
+                  <td>{transaction.status}</td>
+                  <td>edit | hapus</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         </section>
         <section id="add-book" className="mb-6">
