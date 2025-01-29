@@ -135,6 +135,7 @@ export default function Home() {
     if (confirm("Apakah Anda yakin ingin menghapus buku ini?")) {
       try {
         console.log("Memulai proses penghapusan untuk ID:", id); // Debug ID sebelum menghapus
+        console.log("Body yang dikirim:", JSON.stringify({ id })); // Debug body request
 
         const res = await fetch(`/api/book/delete`, {
           method: "DELETE",
@@ -150,10 +151,17 @@ export default function Home() {
           console.error("Error detail dari server:", errorData);
           throw new Error("Failed to delete book");
         }
+
+        const deletedBook = await res.json(); // Jika sukses, log data buku yang dihapus
+        console.log("Buku berhasil dihapus:", deletedBook);
+
         setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
+        console.log("State buku diperbarui.");
       } catch (error) {
         console.error("Error deleting book:", error);
       }
+    } else {
+      console.log("Penghapusan dibatalkan oleh pengguna."); // Log jika pengguna membatalkan
     }
   };
 
