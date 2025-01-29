@@ -1,9 +1,10 @@
 import prisma from "../../../../lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function DELETE(req, { params }) {
+export async function DELETE(req, context) {
   try {
-    const id = Number(await params.id);
+    const params = await context.params; // Await params terlebih dahulu
+    const id = Number(params.id);
 
     // Hapus buku dari database
     const deletedBook = await prisma.book.delete({
