@@ -137,7 +137,7 @@ export default function Home() {
         console.log("Memulai proses penghapusan untuk ID:", id); // Debug ID sebelum menghapus
         console.log("Body yang dikirim:", JSON.stringify({ id })); // Debug body request
 
-        const res = await fetch(`/api/book/delete`, {
+        const res = await fetch(`/api/book/delete/${id}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
