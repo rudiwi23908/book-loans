@@ -390,9 +390,17 @@ export default function Home() {
                   <td>{index + 1}</td>
                   <td>{transaction.book_id}</td>
                   <td>{transaction.borrower_name}</td>
-                  <td>{transaction.borrow_date}</td>
-                  <td>{transaction.return_date}</td>
-                  <td>{transaction.actual_return_date}</td>
+                  <td>
+                    {new Date(transaction.borrow_date).toLocaleString("id-ID")}
+                  </td>
+                  <td>
+                    {new Date(transaction.return_date).toLocaleString("id-ID")}
+                  </td>
+                  <td>
+                    {new Date(transaction.actual_return_date).toLocaleString(
+                      "id-ID"
+                    )}
+                  </td>
                   <td>{transaction.status}</td>
                   <td>edit | hapus</td>
                 </tr>
