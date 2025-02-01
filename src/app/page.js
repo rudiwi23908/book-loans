@@ -72,9 +72,8 @@ export default function Home() {
 
       if (!res.ok) throw new Error("Failed to create transaction");
 
-      const data = await res.json();
-      console.log("Created transaction:", data);
-
+      const newTrasaction = await res.json();
+      setTransactions((prevTrasactions) => [...prevTrasactions, newTrasaction]);
       setFormDataTransaction({
         book_id: "",
         title: "",
@@ -199,6 +198,7 @@ export default function Home() {
     const fetchTransactions = async () => {
       try {
         const res = await fetch("/api/transaction/read");
+        console.log("useeffect untuk transaction");
         if (!res.ok) throw new Error("Failed to fetch books");
         const data = await res.json();
         setTransactions(data);

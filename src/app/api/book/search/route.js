@@ -14,7 +14,6 @@ export async function GET(request) {
       where: {
         title: {
           contains: title,
-          mode: "insensitive", // case-insensitive search
         },
       },
       select: {

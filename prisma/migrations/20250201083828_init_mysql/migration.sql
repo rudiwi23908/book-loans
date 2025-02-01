@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Book` MODIFY `title` VARCHAR(255) NOT NULL;
