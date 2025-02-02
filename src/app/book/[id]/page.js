@@ -1,8 +1,6 @@
 async function fetchBookDetails(id) {
   try {
-    const response = await fetch(`http://localhost:3000/api/book/${id}`, {
-      cache: "no-store", // Hindari cache untuk data dinamis
-    });
+    const response = await fetch(`http://localhost:3001/api/book/${id}`);
 
     if (!response.ok) {
       throw new Error("Book not found");
@@ -26,29 +24,27 @@ export default async function BookDetail({ params }) {
     );
   }
 
-  const {
-    title,
-    author,
-    category,
-    stock,
-    description,
-    created_at,
-    updated_at,
-  } = book;
+  const formatDate = (dateString) => {
+    return new Intl.DateTimeFormat("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }).format(new Date(dateString));
+  };
 
   return (
     <div className="min-h-screen bg-gray-900 text-white p-4">
       <header className="bg-blue-800 text-white p-4 rounded-md shadow-md">
-        <h1 className="text-2xl font-bold">{title}</h1>
+        <h1 className="text-2xl font-bold">{book.title}</h1>
       </header>
       <main className="mt-4">
         <div className="bg-gray-800 p-4 rounded-md shadow-md">
-          <h2 className="text-xl font-bold">Author: {author}</h2>
-          <p>Category: {category}</p>
-          <p>Stock: {stock}</p>
-          <p>Description: {description}</p>
-          <p>Created At: {new Date(created_at).toLocaleDateString()}</p>
-          <p>Updated At: {new Date(updated_at).toLocaleDateString()}</p>
+          <h2 className="text-xl font-bold">Author: {book.author}</h2>
+          <p>Category: {book.category}</p>
+          <p>Stock: {book.stock}</p>
+          <p>Description: {book.description}</p>
+          <p>Created At: {formatDate(book.created_at)}</p>
+          <p>Updated At: {formatDate(book.updated_at)}</p>
         </div>
       </main>
     </div>
