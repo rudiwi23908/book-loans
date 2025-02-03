@@ -3,6 +3,7 @@
 import { stringify } from "postcss";
 import React, { useState, useEffect } from "react";
 import { BookList } from "./components/BookList";
+import { TransactionList } from "./components/TransactionList";
 
 // import { useRouter } from "next/router";
 
@@ -207,45 +208,13 @@ export default function Home() {
         <h1 className="text-2xl font-bold">Aplikasi Peminjaman Buku</h1>
       </header>
       <main className="mt-6">
-        <BookList />
+        <section id="book-list" className="mb-6">
+          <h2 className="text-xl font-semibold mb-4">Daftar Buku</h2>
+          <BookList />
+        </section>
         <section id="transaction-list" className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Daftar Transaksi</h2>
-          <table className="min-w-full bg-gray-800 shadow-md rounded-md overflow-hidden">
-            <thead className="bg-gray-700">
-              <tr>
-                <th className="py-2 px-4">ID</th>
-                <th className="py-2 px-4">ID Buku</th>
-                <th className="py-2 px-4">Nama Peminjam</th>
-                <th className="py-2 px-4">Tanggal Pinjam</th>
-                <th className="py-2 px-4">Tanggal Pengembalian</th>
-                <th className="py-2 px-4">Tanggal Dikembalikan</th>
-                <th className="py-2 px-4">Status</th>
-                <th className="py-2 px-4">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.map((transaction, index) => (
-                <tr key={transaction.id}>
-                  <td>{index + 1}</td>
-                  <td>{transaction.book_id}</td>
-                  <td>{transaction.borrower_name}</td>
-                  <td>
-                    {new Date(transaction.borrow_date).toLocaleString("id-ID")}
-                  </td>
-                  <td>
-                    {new Date(transaction.return_date).toLocaleString("id-ID")}
-                  </td>
-                  <td>
-                    {new Date(transaction.actual_return_date).toLocaleString(
-                      "id-ID"
-                    )}
-                  </td>
-                  <td>{transaction.status}</td>
-                  <td>edit | hapus</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <TransactionList />
         </section>
         <section id="add-book" className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Tambah Buku</h2>
