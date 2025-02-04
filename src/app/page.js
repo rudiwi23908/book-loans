@@ -13,7 +13,7 @@ export default function Home() {
   const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState(null);
   const [books, setBooks] = useState([]);
-
+  const [transactionError, setTransactionError] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const [formDataBook, setFormDataBook] = useState({
@@ -63,11 +63,9 @@ export default function Home() {
 
   const handleSubmitTransaction = async (e) => {
     e.preventDefault();
-
-    console.log("Payload being sent:", formDataTransaction);
-
+    setTransactionError(null);
     try {
-      const res = await fetch("/api/transaction/create", {
+      const res = await fetch("//transaction/create", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -75,7 +73,7 @@ export default function Home() {
         body: JSON.stringify(formDataTransaction),
       });
 
-      if (!res.ok) throw new Error("Failed to create transaction");
+      if (!res.ok) throw new Error("gagal menambahkan transaksi");
 
       const newTrasaction = await res.json();
       setTransactions((prevTrasactions) => [...prevTrasactions, newTrasaction]);
@@ -89,7 +87,7 @@ export default function Home() {
         status: "borrowed",
       });
     } catch (error) {
-      console.error("Error creating transaction", error);
+      setTransactionError(error.message);
     }
   };
 
@@ -187,11 +185,24 @@ export default function Home() {
         </section>
         <section id="add-book" className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Tambah Buku</h2>
-          <BookForm />
+          <BookForm
+            onSubmitBook={handleSubmitBook}
+            onChangeBook={handleChangeBook}
+            formDataBook={formDataBook}
+          />
         </section>
         <section id="add-transaction" className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Tambah Transaksi</h2>
-          <TransactionForm />
+          <TransactionForm
+            onSubmitTransaction={handleSubmitTransaction}
+            onSearchChange={handleSearchChange}
+            searchTerm={searchTerm}
+            formDataTransaction={formDataTransaction}
+            filteredBooks={filteredBooks}
+            onInputChangeTransaction={handleInputChangeTransaction}
+            onSelectBook={handleSelectBook}
+            transactionError={transactionError}
+          />
         </section>
       </main>
     </div>

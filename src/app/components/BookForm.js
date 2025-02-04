@@ -1,11 +1,11 @@
 import React from "react";
 
-export const BookForm = () => {
+export const BookForm = ({ onSubmitBook, onChangeBook, formDataBook }) => {
   return (
     <form
       id="add-book-form"
       className="bg-gray-800 p-4 rounded-md shadow-md"
-      onSubmit={handleSubmitBook}
+      onSubmit={onSubmitBook}
     >
       <div className="mb-4">
         <label htmlFor="title" className="block text-gray-300">
@@ -18,7 +18,7 @@ export const BookForm = () => {
           required
           className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
           value={formDataBook.title}
-          onChange={handleChangeBook}
+          onChange={onChangeBook}
         />
       </div>
       <div className="mb-4">
@@ -32,7 +32,7 @@ export const BookForm = () => {
           required
           className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
           value={formDataBook.author}
-          onChange={handleChangeBook}
+          onChange={onChangeBook}
         />
       </div>
       <div className="mb-4">
@@ -45,7 +45,7 @@ export const BookForm = () => {
           name="category"
           required
           value={formDataBook.category}
-          onChange={handleChangeBook}
+          onChange={onChangeBook}
           className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
         />
       </div>
@@ -60,7 +60,7 @@ export const BookForm = () => {
           required
           className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
           value={formDataBook.stock}
-          onChange={handleChangeBook}
+          onChange={onChangeBook}
         />
       </div>
       <button
