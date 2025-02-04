@@ -4,13 +4,16 @@ import { stringify } from "postcss";
 import React, { useState, useEffect } from "react";
 import { BookList } from "./components/BookList";
 import { TransactionList } from "./components/TransactionList";
+import { BookForm } from "./components/BookForm";
+import { TransactionForm } from "./components/TransactionForm";
 
 // import { useRouter } from "next/router";
 
 export default function Home() {
   const [transactions, setTransactions] = useState([]);
   const [error, setError] = useState(null);
-  const [updatedData, setUpdatedData] = useState({}); // Menyimpan data yang diubah
+  const [books, setBooks] = useState([]);
+
   const [loading, setLoading] = useState(true);
 
   const [formDataBook, setFormDataBook] = useState({
@@ -112,40 +115,6 @@ export default function Home() {
 
   // const router = useRouter();
 
-  const handleDelete = async (id) => {
-    if (confirm("Apakah Anda yakin ingin menghapus buku ini?")) {
-      try {
-        console.log("Memulai proses penghapusan untuk ID:", id); // Debug ID sebelum menghapus
-        console.log("Body yang dikirim:", JSON.stringify({ id })); // Debug body request
-
-        const res = await fetch(`/api/book/delete/${id}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ id }),
-        });
-        console.log("Respons fetch:", res); // Log respons fetch
-
-        if (!res.ok) {
-          const errorData = await res.json(); // Jika error, log error detail
-          console.error("Error detail dari server:", errorData);
-          throw new Error("Failed to delete book");
-        }
-
-        const deletedBook = await res.json(); // Jika sukses, log data buku yang dihapus
-        console.log("Buku berhasil dihapus:", deletedBook);
-
-        setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
-        console.log("State buku diperbarui.");
-      } catch (error) {
-        console.error("Error deleting book:", error);
-      }
-    } else {
-      console.log("Penghapusan dibatalkan oleh pengguna."); // Log jika pengguna membatalkan
-    }
-  };
-
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
@@ -210,184 +179,19 @@ export default function Home() {
       <main className="mt-6">
         <section id="book-list" className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Daftar Buku</h2>
-          <BookList />
+          <BookList books={books} setBooks={setBooks} />
         </section>
         <section id="transaction-list" className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Daftar Transaksi</h2>
-          <TransactionList />
+          <TransactionList transactions={transactions} />
         </section>
         <section id="add-book" className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Tambah Buku</h2>
-          <form
-            id="add-book-form"
-            className="bg-gray-800 p-4 rounded-md shadow-md"
-            onSubmit={handleSubmitBook}
-          >
-            <div className="mb-4">
-              <label htmlFor="title" className="block text-gray-300">
-                Judul:
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                required
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-                value={formDataBook.title}
-                onChange={handleChangeBook}
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="author" className="block text-gray-300">
-                Penulis:
-              </label>
-              <input
-                type="text"
-                id="author"
-                name="author"
-                required
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-                value={formDataBook.author}
-                onChange={handleChangeBook}
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="category" className="block text-gray-300">
-                Kategori:
-              </label>
-              <input
-                type="text"
-                id="category"
-                name="category"
-                required
-                value={formDataBook.category}
-                onChange={handleChangeBook}
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="stock" className="block text-gray-300">
-                Stok:
-              </label>
-              <input
-                type="number"
-                id="stock"
-                name="stock"
-                required
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-                value={formDataBook.stock}
-                onChange={handleChangeBook}
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-600 text-white py-2 px-4 rounded-md"
-            >
-              Tambah Buku
-            </button>
-          </form>
+          <BookForm />
         </section>
         <section id="add-transaction" className="mb-6">
           <h2 className="text-xl font-semibold mb-4">Tambah Transaksi</h2>
-          <form
-            id="add-transaction-form"
-            className="bg-gray-800 p-4 rounded-md shadow-md"
-            onSubmit={handleSubmitTransaction}
-          >
-            <div className="mb-4">
-              <label htmlFor="book_title" className="block text-gray-300">
-                Judul Buku
-              </label>
-              <input
-                type="text"
-                id="book_title"
-                name="book_title"
-                required
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-                onChange={handleSearchChange} // Update pencarian buku
-                value={searchTerm || formDataTransaction.title}
-              />
-              {filteredBooks.length > 0 ? (
-                <ul className="bg-gray-700 mt-2 p-2 rounded-md max-h-40 overflow-y-auto">
-                  {filteredBooks.map((book) => (
-                    <li
-                      key={book.id}
-                      className="cursor-pointer p-2 hover:bg-gray-600"
-                      onClick={() => handleSelectBook(book)} // Memilih buku dari hasil pencarian
-                    >
-                      {book.title}
-                    </li>
-                  ))}
-                </ul>
-              ) : searchTerm && !filteredBooks.length ? (
-                <div className="bg-gray-700 mt-2 p-2 rounded-md">
-                  <span>Tidak ada hasil ditemukan</span>
-                </div>
-              ) : null}
-            </div>
-            <div className="mb-4">
-              <label htmlFor="borrower_name" className="block text-gray-300">
-                Nama Peminjam:
-              </label>
-              <input
-                type="text"
-                onChange={handleInputChangeTransaction}
-                id="borrower_name"
-                name="borrower_name"
-                required
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-                value={formDataTransaction.borrower_name}
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="borrow_date" className="block text-gray-300">
-                Tanggal Pinjam:
-              </label>
-              <input
-                type="date"
-                id="borrow_date"
-                onChange={handleInputChangeTransaction}
-                name="borrow_date"
-                required
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-                value={formDataTransaction.borrow_date}
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="return_date" className="block text-gray-300">
-                Tanggal Pengembalian:
-              </label>
-              <input
-                type="date"
-                id="actual_return_date"
-                onChange={handleInputChangeTransaction}
-                name="actual_return_date"
-                required
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-                value={formDataTransaction.actual_return_date}
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="return_date" className="block text-gray-300">
-                Tanggal Kembali:
-              </label>
-              <input
-                type="date"
-                id="return_date"
-                onChange={handleInputChangeTransaction}
-                name="return_date"
-                required
-                className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-                value={formDataTransaction.return_date}
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-600 text-white py-2 px-4 rounded-md"
-            >
-              Tambah Transaksi
-            </button>
-          </form>
+          <TransactionForm />
         </section>
       </main>
     </div>

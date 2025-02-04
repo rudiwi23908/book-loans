@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 
-export const BookList = () => {
-  const [books, setBooks] = useState([]);
+export const BookList = ({ books, setBooks }) => {
   const [editingBookId, setEditingBookId] = useState(null); // Menyimpan ID buku yang sedang diedit
+  const [updatedData, setUpdatedData] = useState({}); // Menyimpan data yang diubah
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -28,7 +28,7 @@ export const BookList = () => {
     const { name, value } = e.target;
     setUpdatedData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "stock" ? Number(value) : value, // Konversi stock ke number
     }));
   };
 
@@ -41,7 +41,9 @@ export const BookList = () => {
         },
         body: JSON.stringify({ id, ...updatedData }),
       });
+
       if (!res.ok) throw new Error("Failed to update book");
+
       const updatedBook = await res.json();
       setBooks((prevBooks) =>
         prevBooks.map((book) => (book.id === id ? updatedBook : book))
@@ -49,6 +51,40 @@ export const BookList = () => {
       setEditingBookId(null);
     } catch (error) {
       console.error("Error updating book:", error);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm("Apakah Anda yakin ingin menghapus buku ini?")) {
+      try {
+        console.log("Memulai proses penghapusan untuk ID:", id); // Debug ID sebelum menghapus
+        console.log("Body yang dikirim:", JSON.stringify({ id })); // Debug body request
+
+        const res = await fetch(`/api/book/delete/${id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ id }),
+        });
+        console.log("Respons fetch:", res); // Log respons fetch
+
+        if (!res.ok) {
+          const errorData = await res.json(); // Jika error, log error detail
+          console.error("Error detail dari server:", errorData);
+          throw new Error("Failed to delete book");
+        }
+
+        const deletedBook = await res.json(); // Jika sukses, log data buku yang dihapus
+        console.log("Buku berhasil dihapus:", deletedBook);
+
+        setBooks((prevBooks) => prevBooks.filter((book) => book.id !== id));
+        console.log("State buku diperbarui.");
+      } catch (error) {
+        console.error("Error deleting book:", error);
+      }
+    } else {
+      console.log("Penghapusan dibatalkan oleh pengguna."); // Log jika pengguna membatalkan
     }
   };
 

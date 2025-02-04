@@ -1,6 +1,6 @@
 import React from "react";
 
-export const TransactionList = () => {
+export const TransactionList = ({ transactions }) => {
   return (
     <table className="min-w-full bg-gray-800 shadow-md rounded-md overflow-hidden">
       <thead className="bg-gray-700">
