@@ -124,14 +124,6 @@ export default function Home() {
     fetchTransactions();
   }, []);
 
-  const handleChangeBook = (e) => {
-    const { name, value } = e.target;
-    setFormDataBook({
-      ...formDataBook,
-      [name]: value,
-    });
-  };
-
   if (loading) return <p>Loading...</p>;
 
   return (

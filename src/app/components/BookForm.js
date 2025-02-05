@@ -1,11 +1,53 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 
 export const BookForm = () => {
+  const [formDataBook, setFormDataBook] = useState({
+    title: "",
+    author: "",
+    category: "",
+    stock: "",
+  });
+
+  const handleSubmitBook = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/book/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formDataBook),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to create book");
+      }
+      const newBook = await res.json();
+      setBooks((prevBooks) => [...prevBooks, newBook]);
+      setFormDataBook({
+        title: "",
+        author: "",
+        category: "",
+        stock: "",
+      });
+    } catch (error) {
+      console.log(formDataBook);
+      console.error("Error:", error);
+    }
+  };
+
+  const handleChangeBook = (e) => {
+    const { name, value } = e.target;
+    setFormDataBook({
+      ...formDataBook,
+      [name]: value,
+    });
+  };
   return (
     <form
       id="add-book-form"
       className="bg-gray-800 p-4 rounded-md shadow-md"
-      onSubmit={onSubmitBook}
+      onSubmit={handleSubmitBook}
     >
       <div className="mb-4">
         <label htmlFor="title" className="block text-gray-300">

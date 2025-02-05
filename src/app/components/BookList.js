@@ -5,12 +5,6 @@ export const BookList = () => {
   const [books, setBooks] = useState([]);
   const [editingBookId, setEditingBookId] = useState(null); // Menyimpan ID buku yang sedang diedit
   const [updatedData, setUpdatedData] = useState({}); // Menyimpan data yang diubah
-  const [formDataBook, setFormDataBook] = useState({
-    title: "",
-    author: "",
-    category: "",
-    stock: "",
-  });
 
   useEffect(() => {
     const fetchBooks = async () => {

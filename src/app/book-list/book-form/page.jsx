@@ -10,4 +10,4 @@ const BookFormPage = () => {
   );
 };
 
-export default bookFormPage;
+export default BookFormPage;
