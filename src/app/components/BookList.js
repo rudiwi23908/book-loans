@@ -1,8 +1,16 @@
+"use client";
 import React, { useState, useEffect } from "react";
-
-export const BookList = ({ books, setBooks }) => {
+export const BookList = () => {
+  const [error, setError] = useState(null);
+  const [books, setBooks] = useState([]);
   const [editingBookId, setEditingBookId] = useState(null); // Menyimpan ID buku yang sedang diedit
   const [updatedData, setUpdatedData] = useState({}); // Menyimpan data yang diubah
+  const [formDataBook, setFormDataBook] = useState({
+    title: "",
+    author: "",
+    category: "",
+    stock: "",
+  });
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -18,6 +26,33 @@ export const BookList = ({ books, setBooks }) => {
 
     fetchBooks();
   }, []);
+
+  const handleSubmitBook = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await fetch("/api/book/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formDataBook),
+      });
+      if (!res.ok) {
+        throw new Error("Failed to create book");
+      }
+      const newBook = await res.json();
+      setBooks((prevBooks) => [...prevBooks, newBook]);
+      setFormDataBook({
+        title: "",
+        author: "",
+        category: "",
+        stock: "",
+      });
+    } catch (error) {
+      console.log(formDataBook);
+      console.error("Error:", error);
+    }
+  };
 
   const handleEditClick = (book) => {
     setEditingBookId(book.id);

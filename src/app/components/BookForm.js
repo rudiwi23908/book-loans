@@ -1,6 +1,6 @@
 import React from "react";
 
-export const BookForm = ({ onSubmitBook, onChangeBook, formDataBook }) => {
+export const BookForm = () => {
   return (
     <form
       id="add-book-form"
