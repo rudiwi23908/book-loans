@@ -5,7 +5,7 @@ export const BookForm = () => {
     <form
       id="add-book-form"
       className="bg-gray-800 p-4 rounded-md shadow-md"
-      onSubmit={onSubmitBook}
+      // onSubmit={onSubmitBook}
     >
       <div className="mb-4">
         <label htmlFor="title" className="block text-gray-300">
@@ -17,8 +17,8 @@ export const BookForm = () => {
           name="title"
           required
           className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-          value={formDataBook.title}
-          onChange={onChangeBook}
+          // value={formDataBook.title}
+          // onChange={onChangeBook}
         />
       </div>
       <div className="mb-4">
@@ -31,8 +31,8 @@ export const BookForm = () => {
           name="author"
           required
           className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-          value={formDataBook.author}
-          onChange={onChangeBook}
+          // value={formDataBook.author}
+          // onChange={onChangeBook}
         />
       </div>
       <div className="mb-4">
@@ -44,8 +44,8 @@ export const BookForm = () => {
           id="category"
           name="category"
           required
-          value={formDataBook.category}
-          onChange={onChangeBook}
+          // value={formDataBook.category}
+          // onChange={onChangeBook}
           className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
         />
       </div>
@@ -59,8 +59,8 @@ export const BookForm = () => {
           name="stock"
           required
           className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
-          value={formDataBook.stock}
-          onChange={onChangeBook}
+          // value={formDataBook.stock}
+          // onChange={onChangeBook}
         />
       </div>
       <button
