@@ -4,7 +4,7 @@ export const BookForm = () => {
   return (
     <form
       id="add-book-form"
-      className="bg-gray-800 p-4 rounded-md shadow-md"
+      className="p-4 bg-gray-800 rounded-md shadow-md"
       // onSubmit={onSubmitBook}
     >
       <div className="mb-4">
@@ -16,7 +16,7 @@ export const BookForm = () => {
           id="title"
           name="title"
           required
-          className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+          className="w-full p-2 text-white bg-gray-900 border border-gray-600 rounded-md"
           // value={formDataBook.title}
           // onChange={onChangeBook}
         />
@@ -30,7 +30,7 @@ export const BookForm = () => {
           id="author"
           name="author"
           required
-          className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+          className="w-full p-2 text-white bg-gray-900 border border-gray-600 rounded-md "
           // value={formDataBook.author}
           // onChange={onChangeBook}
         />
@@ -46,7 +46,7 @@ export const BookForm = () => {
           required
           // value={formDataBook.category}
           // onChange={onChangeBook}
-          className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+          className="w-full p-2 text-white bg-gray-900 border border-gray-600 rounded-md"
         />
       </div>
       <div className="mb-4">
@@ -58,14 +58,14 @@ export const BookForm = () => {
           id="stock"
           name="stock"
           required
-          className="w-full p-2 border border-gray-600 rounded-md bg-gray-900 text-white"
+          className="w-full p-2 text-white bg-gray-900 border border-gray-600 rounded-md"
           // value={formDataBook.stock}
           // onChange={onChangeBook}
         />
       </div>
       <button
         type="submit"
-        className="bg-blue-600 text-white py-2 px-4 rounded-md"
+        className="px-4 py-2 text-white bg-blue-600 rounded-md"
       >
         Tambah Buku
       </button>
